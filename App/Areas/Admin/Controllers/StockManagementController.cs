@@ -76,7 +76,7 @@ namespace App.Areas.Admin.Controllers
         }
         public IActionResult Record ( )
         {
-            return Ok ( 200 );
+            return Ok ( 500 );
         }
         public IActionResult Excel ( )
         {
