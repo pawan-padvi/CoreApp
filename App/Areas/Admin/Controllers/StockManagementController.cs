@@ -158,7 +158,6 @@ namespace App.Areas.Admin.Controllers
                     wb.SaveAs ( stream );
                     return File ( stream.ToArray ( ), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grid.xlsx" );
                 }
-
             }
         }
         public IActionResult PrintRecord ( )
