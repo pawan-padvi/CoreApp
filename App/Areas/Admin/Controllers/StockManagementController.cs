@@ -1,25 +1,11 @@
 ﻿using App.Interfaces;
 using App.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using App.Controllers;
-using App.Security;
-using System.Reflection;
-using static App.Models.DropdownModel;
-using System.Diagnostics;
 using System.Data;
 using iText.Kernel.Pdf;
 using System.Text;
 using iText.Html2pdf;
 using ClosedXML.Excel;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Formats.Asn1;
-using System.Globalization;
-using System;
-using System.IO;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Org.BouncyCastle.Asn1.X509.Qualified;
 
 namespace App.Areas.Admin.Controllers
 {
