@@ -6,7 +6,6 @@ using iText.Kernel.Pdf;
 using System.Text;
 using iText.Html2pdf;
 using ClosedXML.Excel;
-
 namespace App.Areas.Admin.Controllers
 {
     [Area ( "Admin" )]
@@ -93,27 +92,20 @@ namespace App.Areas.Admin.Controllers
                 ViewBag.SortField = sortField;
             }
             ViewBag.searchString = searchString;
-
             _model.lstProductType = _productTypes;
             _model.lstUnit = _unitTypes;
             int userId = 0;
             List<StockManagementModel> stocks = _stockManagement.GetAll ( ref TotalCount, currentPage, searchString, pageSize, sortCol, sortOrder, userId );
-
             var resPageSizeDdl = _dropdownService.GetPageSizeDdl ( );
-
             if ( resPageSizeDdl [0].DbCode != -1 )
             {
                 _model.lstPageSizeDdl = resPageSizeDdl;
             }
-
-
             int count = stocks.Count;
             _model.Pager = new JW.Pager ( TotalCount, currentPage, PageSizeId );
-
             _model.SearchString = searchString;
             _model.PageSizeId = PageSizeId;
             _model.lstAllStocks = stocks;
-
             DataTable dt = new DataTable ( "Grid" );
             dt.Columns.AddRange ( new DataColumn [] {
             new DataColumn("Product",typeof(string)),
@@ -130,7 +122,6 @@ namespace App.Areas.Admin.Controllers
                               {
                                   ProductT = s.ProductTypeName,
                               };
-
                 var UnitName = from s in _unitTypes.AsEnumerable ( ).Where ( x => x.id == Convert.ToInt32 ( item.Unit ) )
                                select new
                                {
@@ -143,7 +134,6 @@ namespace App.Areas.Admin.Controllers
                 dr ["Stock Location"] = item.StockLocation;
                 dr ["Unit"] = UnitName.First ( ).UnitName1.ToString ( );
                 dr ["TotalCost"] = Convert.ToDouble ( item.TotalCost );
-
                 dt.Rows.Add ( dr );
                 dt.AcceptChanges ( );
             }
@@ -154,7 +144,6 @@ namespace App.Areas.Admin.Controllers
                 wb.Worksheets.Add ( dt );
                 using ( MemoryStream stream = new MemoryStream ( ) )
                 {
-
                     wb.SaveAs ( stream );
                     return File ( stream.ToArray ( ), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grid.xlsx" );
                 }
@@ -164,7 +153,6 @@ namespace App.Areas.Admin.Controllers
         {
             string wwwRootPath = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot" );
             string pdfPath = Path.Combine ( wwwRootPath, "PDF", "makepdf.pdf" ).ToString ( );
-
             int pageSize = 100;
             int currentPage = 1; string searchString = ""; string SortCol = "Id"; string sortOrder = "Asc";
             int TotalCount = 0;
@@ -276,7 +264,6 @@ color: black;
         [ValidateAntiForgeryToken]
         public IActionResult InsertStock ( StockManagementModel model )
         {
-
             if ( ModelState.IsValid )
             {
                 model.CreatedBy = HttpContext.Session.GetString ( "UserName" );
@@ -286,9 +273,7 @@ color: black;
             _model.lstProductType = _productTypes;
             _model.lstUnit = _unitTypes;
             _model.ProductID = "PRD" + Guid.NewGuid ( ).ToString ( );
-
             return View ( "Index", _model );
-
         }
         public IActionResult StockList ( int currentPage = 1, string searchString = "", int PageSizeId = 10, string sortCol = "Id", string sortOrder = "Asc", string sortField = "Id" )
         {
