@@ -76,7 +76,12 @@ namespace App.Areas.Admin.Controllers
         }
         public IActionResult Record ( )
         {
-            return Ok ( 500 );
+            List<Person> lstPerson = new List<Person> ( );
+            lstPerson.Add ( new Person { Id = 0, Name = "Jacob", Location = "India" } );
+            lstPerson.Add ( new Person { Id = 1, Name = "Jacob1", Location = "India1" } );
+            lstPerson.Add ( new Person { Id = 2, Name = "Jacob2", Location = "India2" } );
+            lstPerson.Add ( new Person { Id = 3, Name = "Jacob3", Location = "India3" } );
+            return Json ( lstPerson );
         }
         public IActionResult Excel ( )
         {
@@ -346,5 +351,17 @@ color: black;
             _model.lstAllStocks = stocks;
             return View ( _model );
         }
+    }
+}
+class Person
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public string? Location { get; set; }
+    public Person ( )
+    {
+        this.Id = Id;
+        this.Name = Name;
+        this.Location = Location;
     }
 }
