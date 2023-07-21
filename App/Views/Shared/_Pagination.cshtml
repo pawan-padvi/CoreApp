@@ -1,0 +1,50 @@
+﻿@{string Action = ViewContext.RouteData.Values["action"].ToString();
+    string Controller = ViewContext.RouteData.Values["controller"].ToString();
+}
+@if (Model.Pager != null)
+{
+    <div class="dataTables_info" id="example2_info" role="status" aria-live="polite" style="margin-top: 10px;">
+        Showing @(Model.Pager.StartIndex >= 0 ? Model.Pager.StartIndex + 1 : 0 ) to @(Model.Pager.EndIndex>=0? Model.Pager.EndIndex+1 :0) of @Model.Pager.TotalItems entries
+        <div class="dataTables_paginate paging_simple_numbers" style="text-align: center; float: right; margin-top: 10px; ">
+            <ul class="pagination dataTables_paginate paging_simple_numbers">
+                @if (Model.Pager.CurrentPage !=0 && Model.Pager.CurrentPage !=1)
+                {
+                    <li class="page-item">
+                        <a class="page-link paginate_button " href="@Url.Action(Action,Controller,new {Area="Admin", CurrentPage=1,SearchString=Model.SearchString,PageSizeId=Model.PageSizeId})">
+                            <span aria-hidden="true">First</span>
+                            <span class="sr-only">First</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link paginate_button" style="width:70px !important" href="@Url.Action(Action, Controller, new { Area = "Admin", CurrentPage = Model.Pager.CurrentPage > 1 ? Model.Pager.CurrentPage - 1 : Model.Pager.CurrentPage, SearchString = Model.SearchString,PageSizeId=Model.PageSizeId })">
+                            <span aria-hidden="true">Previous</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                }
+                @foreach (var p in Model.Pager.Pages)
+                {
+                    <li class="page-item @(p == Model.Pager.CurrentPage ? "active" : "")">
+                        <a class="page-link paginate_button " href="@Url.Action(Action,Controller,new { Area="Admin",CurrentPage=p,SearchString=Model.SearchString,PageSizeId=Model.PageSizeId})">@p</a>
+                    </li>
+                }
+                @if (Model.Pager.CurrentPage != Model.Pager.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link paginate_button " href="@Url.Action(Action,Controller,new {Area="Admin", CurrentPage=Model.Pager.CurrentPage +1,SearchString=Model.SearchString,PageSizeId=Model.PageSizeId})" aria-label="Next">
+                            <span aria-hidden="true">Next</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link paginate_button " href="@Url.Action(Action,Controller,new {Area="Admin", CurrentPage=Model.Pager.TotalPages ,SearchString=Model.SearchString,PageSizeId=Model.PageSizeId})" aria-label="Next">
+                            <span aria-hidden="true">Last</span>
+                            <span class="sr-only">Last</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

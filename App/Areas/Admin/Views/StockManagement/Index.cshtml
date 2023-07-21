@@ -1,0 +1,144 @@
+﻿@model App.Models.StockManagementModel
+@{
+    Layout = "_Layout";
+}
+<style>
+    label:after {
+        content: " *";
+        color: red;
+    }
+
+    #StockManagement {
+        padding: 50px;
+    }
+
+    .field-validation-error {
+        color: red;
+    }
+    
+</style>
+<div>
+    <div id="formDefinition">
+    @using ( Html.BeginForm ( "InsertStock", "StockManagement", new { Area = "Admin" } ) )
+    {
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.ProductID,new{style="font-weight:bold;"})
+
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.ProductID,new{@class="form-control",placeholder="Enter Product Id"})
+                @Html.ValidationMessageFor(model=>model.ProductID)
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.ProductType,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                    @Html.DropDownListFor(model => model.ProductType,new SelectList(Model.lstProductType, "id", "ProductTypeName",Model.ProductType),"--None--", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model=>model.ProductType)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.Unit,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.DropDownListFor(model=>model.Unit,new SelectList(Model.lstUnit,"id","UnitName"),"--None--",new {@class="form-control"})
+                @Html.ValidationMessageFor(model=>model.Unit)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.Description,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                    @Html.TextAreaFor(model=>model.Description,new{@class="form-control",placeholder="Enter Product Description",rows="2"})
+                @Html.ValidationMessageFor(model=>model.Description)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.Vendor,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.Vendor,new{@class="form-control",placeholder="Please Enter Vendor"})
+                @Html.ValidationMessageFor(model=>model.Vendor)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.StockLocation,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.StockLocation,new{@class="form-control",placeholder="Please Enter Stock Location"})
+                @Html.ValidationMessageFor(model=>model.StockLocation)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.StockQuantity,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.StockQuantity,new{@class="form-control",placeholder="Please Enter Stock Quantity",type="number",min=0})
+                @Html.ValidationMessageFor(model=>model.StockQuantity)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">
+                @Html.LabelFor(model=>model.UnitPrice,new{style="font-weight:bold;"})
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.UnitPrice,new{@class="form-control",placeholder="Please Enter Unit Price",type="number",min=0})
+                @Html.ValidationMessageFor(model=>model.UnitPrice)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-2 col-lg-2 col-sm-6 col-6">@Html.LabelFor(model=>model.TotalCost,new{style="font-weight:bold;"})</div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-6">
+                @Html.TextBoxFor(model=>model.TotalCost,new {@class="form-control",placeholder="Please Enter Total Cost",enabled=false,min=0})
+                @Html.ValidationMessageFor(model=>model.TotalCost)
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-8 col-lg-8 col-sm-8 col-8 text-center">
+           
+                        @if ( ViewBag.FromPage == "current" )
+                            {
+                        <button class="btn btn-outline-primary" type="submit">Submit</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-primary" type="submit">Update</button>
+                            }
+                       
+                
+                <button class="btn btn-outline-info" type="reset">Reset</button>
+                    @Html.ActionLink("Record List", "StockList", new {sortField = "id", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId },new { @class = "btn btn-secondary" })
+                    @*<a href="@Url.Action("StockList","Admin",new{Area="Admin"})">Record List</a>*@
+            </div>
+        </div>
+    }
+    </div>
+</div>
+<script type="text/javascript">
+    var StockQuantity = document.querySelector("#StockQuantity");
+    var UnitPrice = document.querySelector("#UnitPrice");
+    var TotalCost = document.querySelector("#TotalCost");
+    var ProductID = document.querySelector("#ProductID");
+    
+    ProductID.setAttribute("readonly", "true");
+    TotalCost.setAttribute("readonly", "true");
+    StockQuantity.onchange = function () {
+        Calculation();
+    }
+
+    UnitPrice.onchange = function () {
+        Calculation();
+    }
+    function Calculation() {
+        TotalCost.value = (UnitPrice.value * StockQuantity.value);
+    }
+ </script>

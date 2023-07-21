@@ -1,0 +1,103 @@
+﻿@model App.Models.StockManagementModel
+@{
+    Layout = "_Layout";
+}
+<style>
+    #mainlabel {
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    th a:hover {
+        text-decoration: none;
+        color: whitesmoke;
+    }
+
+    th a {
+        text-decoration: none;
+        color: white;
+    }
+
+        th a:after {
+            content: " \21C5";
+        }
+</style>
+<div id="mainlabel" style="text-align:end"><a href="@Url.Action("Index","StockManagement", new {Area="Admin"})">Add Stock &nbsp;<i class="fa  fa-plus"></i></a></div>
+<div id="dataTable">
+    <table class="table table-responsive d-lg-table  table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th class="hidden"><a href="@Url.Action("StockList","StockManagement", new {Area="Admin"})">Id</a></th>
+                <th class="text-center"> @Html.ActionLink("Type", "StockList", new { sortField = "ProductType", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="text-center">@Html.ActionLink("Description", "StockList", new { sortField = "Description", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="text-center">@Html.ActionLink("Vendor", "StockList", new { sortField = "Vendor", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="text-center"> @Html.ActionLink("Location", "StockList", new { sortField = "StockLocation", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="text-center">@Html.ActionLink("Unit", "StockList", new { sortField = "Unit", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="hidden">@Html.ActionLink("Quantity", "StockList", new { sortField = "StockQuantity", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="hidden">@Html.ActionLink("Price", "StockList", new { sortField = "UnitPrice", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th class="text-center">@Html.ActionLink("Total", "StockList", new { sortField = "TotalCost", sortCol = ViewBag.SortField, sortOrder = ViewBag.SortOrder, searchString = ViewBag.searchString, PageSizeId = ViewBag.PageSizeId })</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            @foreach ( var res in Model.lstAllStocks )
+            {
+                <tr>
+
+                    <td class="hidden">
+                        <input class="form-control" value="@res.ProductID" />
+                    </td>
+                    <td>
+                        <select class="form-control">
+                            @foreach ( var lst in Model.lstProductType )
+                            {
+                                bool select = res.ProductType.ToString ( ) == @lst.id.ToString ( ) ? true : false;
+                                <option value="@lst.id" selected=@select>@lst.ProductTypeName</option>
+                            }
+                        </select>
+                    </td>
+                    <td><input class="form-control" value="@res.Description" /></td>
+                    <td><input class="form-control" value="@res.Vendor" /></td>
+                    <td><input class="form-control" value="@res.StockLocation" /></td>
+                    <td>
+                        @*<input class="form-control" value="@res.Unit" />*@
+                        <select class="form-control">
+                            @foreach ( var rslt in Model.lstUnit )
+                            {
+                                bool unit = res.Unit.ToString ( ) == rslt.id.ToString ( ) ? true : false;
+                                <option value="@rslt.id" selected=@unit>@rslt.UnitName</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="hidden"><input class="form-control" value="@res.StockQuantity" /></td>
+                    <td class="hidden"><input class="form-control" value="@res.UnitPrice" /></td>
+                    <td><input class="form-control" value="@res.TotalCost" /></td>
+                    <td>
+                        <a href="@Url.Action("Index","StockManagement", new {Area="Admin",From="stockList",searchString=$"{@res.ProductID}"})"><i class="fa fa-eye"></i></a>
+                        <a href="@Url.Action("DeleteFunction","StockManagement", new {Area="Admin",From="stockList",ProductID=$"{@res.ProductID}"})"><i onclick="confirm('Do you want to Delete ?')" class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+            }
+
+            @if ( Model.lstAllStocks.Count <= 0 )
+            {
+                <tr>
+                    <th colspan="10"><strong>Record Not Found</strong></th>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a href="@Url.Action("PrintRecord","StockManagement",new {Area="Admin"})" class="btn btn-info">Print</a>
+    <a href="@Url.Action("Excel","StockManagement",new {Area="Admin"})" class="btn btn-info">Excel</a>
+    <a href="@Url.Action("Record","StockManagement",new {Area="Admin"})">Record</a>
+
+
+    @Html.Partial("_Pagination", Model)
+
+    </script>
+</div>
