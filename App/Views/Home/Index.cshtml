@@ -1,4 +1,6 @@
-﻿@model App.Models.FileUploadModel
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model App.Models.FileUploadModel
 @{
     ViewData ["Title"] = "Home Page";
 }
@@ -126,8 +128,14 @@
                     <!-- Card Body -->
                     <div class="card-body">
                         <div class="chart-area text-center">
-                            <img style="height:200px; width:200px; border:none;" src="~/template/img/notfound.png" id="imgPreview" />
-                            <button class="btn btn-secondary" type="submit" style="display:none;" id="btnSubmitFile">Upload Image</button>
+                            @*    @if ( @HttpContextAccessor.HttpContext.Session.GetString ( "Path" ) != string.Empty )*@
+                            @{
+                                //  var path = "notfound.png";
+                                var path = @HttpContextAccessor.HttpContext.Session.GetString ( "Path" ) != null ? "uploads/" + @HttpContextAccessor.HttpContext.Session.GetString ( "Path" ) : "template/img/notfound.png";
+                                <img style="height:200px; width:200px; border:none;" src="~/@path" id="imgPreview" />
+                            }
+
+                            <br /><button class="btn btn-secondary" type="submit" style="display:none;" id="btnSubmitFile">Upload Image</button>
                         </div>
                     </div>
                 </div>

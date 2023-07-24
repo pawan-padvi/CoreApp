@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Reflection;
 using System.Xml.Linq;
+using IronOcr;
+
 namespace App.Controllers
 {
     public class HomeController : Controller
@@ -154,21 +156,44 @@ namespace App.Controllers
         {
             return View ( new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier } );
         }
+        [Obsolete]
+
+        public void IronOcrFunction ( string imagePath )
+        {
+            var ocr = new IronTesseract ( );
+
+            using ( var inputImage = new OcrInput ( imagePath ) )
+            {
+
+                var result = ocr.Read ( inputImage );
+                if ( result != null && result.Text != null )
+                {
+                    string extractedText = result.Text;
+                    Console.WriteLine ( extractedText );
+                }
+            }
+        }
+
         [HttpPost]
         public IActionResult Index ( FileUploadModel model )
         {
-            string? filePath = null;
+            string? filePath = "";
+            string? uniqueFileName = "";
+            string? uploads = "";
             if ( model.imageUpload != null )
             {
-                var uniqueFileName = GetUniqueFileName ( model.imageUpload.FileName );
-                var uploads = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot\\uploads" );
+                uniqueFileName = GetUniqueFileName ( model.imageUpload.FileName );
+                uploads = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot\\uploads" );
                 filePath = Path.Combine ( uploads, uniqueFileName );
                 model.ImagePath = filePath;
 
                 ViewBag.FilePath = uniqueFileName;
                 model.imageUpload.CopyTo ( new FileStream ( filePath, FileMode.Create ) );
             }
-            fileUploadModel.ImagePath = filePath;
+            HttpContext.Session.SetString ( "Path", uniqueFileName );
+            //fileUploadModel.ImagePath = filePath;
+
+            // IronOcrFunction ( filePath );
             return View ( fileUploadModel );
         }
 

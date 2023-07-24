@@ -6,6 +6,5 @@ namespace App.Models
     {
         public IFormFile? imageUpload { get; set; }
         public String? ImagePath { get; set; }
-
     }
 }

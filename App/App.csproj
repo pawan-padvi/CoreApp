@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.102.0" />
     <PackageReference Include="Dapper" Version="2.0.143" />
+    <PackageReference Include="IronOcr" Version="2023.7.28" />
     <PackageReference Include="itext7" Version="8.0.0" />
     <PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0" />
     <PackageReference Include="itext7.pdfhtml" Version="5.0.0" />
