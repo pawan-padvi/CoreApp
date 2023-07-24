@@ -6,8 +6,7 @@ using iText.Kernel.Pdf;
 using System.Text;
 using iText.Html2pdf;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.EMMA;
-using Microsoft.Extensions.Hosting.Internal;
+
 
 namespace App.Areas.Admin.Controllers
 {
@@ -64,13 +63,39 @@ namespace App.Areas.Admin.Controllers
         }
         public IActionResult Record ( )
         {
-            List<Person> lstPerson = new List<Person> ( );
-            lstPerson.Add ( new Person { Id = 0, Name = "Jacob", Location = "India" } );
-            lstPerson.Add ( new Person { Id = 1, Name = "Jacob1", Location = "India1" } );
-            lstPerson.Add ( new Person { Id = 2, Name = "Jacob2", Location = "India2" } );
-            lstPerson.Add ( new Person { Id = 3, Name = "Jacob3", Location = "India3" } );
-            return Json ( lstPerson );
+            int pageSize = 100;
+            int currentPage = 1; string searchString = ""; string SortCol = "Id"; string sortOrder = "Asc";
+            int TotalCount = 0;
+            var result = _stockManagement.GetAll ( ref TotalCount, currentPage, searchString, pageSize, SortCol, sortOrder, 0 );
+            // Create a CSV-formatted string using StringBuilder
+            StringBuilder csvData = new StringBuilder ( );
+            csvData.AppendLine ( "Sr.No,Product,Description,Vendor,StockLocation,Unit,TotalCost" );
+
+            int i = 1;
+            foreach ( var item in result )
+            {
+                var Product = from s in _productTypes.AsEnumerable ( ).Where ( x => x.id == Convert.ToInt32 ( item.ProductType ) )
+                              select new
+                              {
+                                  ProductT = s.ProductTypeName,
+                              };
+
+                var UnitName = from s in _unitTypes.AsEnumerable ( ).Where ( x => x.id == Convert.ToInt32 ( item.Unit ) )
+                               select new
+                               {
+                                   UnitName1 = s.UnitName,
+                               };
+                csvData.AppendLine ( $"{i++},{Product.First ( ).ProductT},{item.Description.ToString ( ).Substring ( 0, Math.Min ( item.Description.Length, 20 ) )}{( item.Description.Length > 20 ? "..." : "" )},{item.Vendor},{item.StockLocation},{UnitName.First ( ).UnitName1},{string.Format ( "{0:0.00}", item.TotalCost )}" );
+                //csvData.AppendLine ( $"{i++},{Product.First ( ).ProductT},{item.Description.ToString ( ).Substring ( 0, Math.Min ( item.Description.Length, 20 ) )}{( item.Description.Length > 20 ? "..." : "" )},{item.Vendor},{item.StockLocation},{UnitName.First ( ).UnitName1},{string.Format ( "{0:0.00}", item.TotalCost )}" );
+            }
+
+            // Convert the CSV string to bytes
+            byte [] fileBytes = Encoding.UTF8.GetBytes ( csvData.ToString ( ) );
+
+            // Return the file using FileResult
+            return File ( fileBytes, "text/csv", "StockList.csv" );
         }
+
         public IActionResult Excel ( )
         {
             int pageSize = 100;
@@ -334,11 +359,13 @@ color: black;
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Location { get; set; }
+        public int Age { get; set; }
         public Person ( )
         {
             this.Id = Id;
             this.Name = Name;
             this.Location = Location;
+            this.Age = Age;
         }
     }
 }

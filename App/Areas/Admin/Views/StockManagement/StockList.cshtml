@@ -92,9 +92,15 @@
             }
         </tbody>
     </table>
-    <a href="@Url.Action("PrintRecord","StockManagement",new {Area="Admin"})" target="_blank" class="btn btn-info">Print</a>
-    <a href="@Url.Action("Excel","StockManagement",new {Area="Admin"})" class="btn btn-info">Excel</a>
-    @*<a href="@Url.Action("Record","StockManagement",new {Area="Admin"})">Record</a>*@
+    <a href="@Url.Action("PrintRecord","StockManagement",new {Area="Admin"})" target="_blank">
+        <img src="~/template/img/pdf.png" style="height:35px; width:35px;" />
+    </a>
+    <a href="@Url.Action("Excel","StockManagement",new {Area="Admin"})">
+        <img src="~/template/img/excel.png" style="height:35px; width:35px;" />
+    </a>
+    <a href="@Url.Action("Record","StockManagement",new {Area="Admin"})">
+        <img src="~/template/img/csv.png" style="height:35px; width:35px;" />
+    </a>
     @Html.Partial("_Pagination", Model)
     </script>
 </div>
