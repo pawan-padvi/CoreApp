@@ -40,7 +40,7 @@ namespace App.Models
         public List<ProductType>? lstProductType { get; set; }
         public List<Unit>? lstUnit { get; set; }
         public String? CreatedBy { get; set; }
-        
+
         public Pager? Pager { get; set; }
         public int PageSizeId { get; set; }
         public string? PageSizeValue { get; set; }
@@ -48,6 +48,8 @@ namespace App.Models
         public List<PageSizeDdl>? lstPageSizeDdl { get; set; }
 
         public List<StockManagementModel>? lstAllStocks { get; set; }
+        public string? DbCode { get; set; }
+        public string? DbMsg { get; set; }
     }
 
     public class ProductType

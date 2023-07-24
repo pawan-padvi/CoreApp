@@ -92,10 +92,9 @@
             }
         </tbody>
     </table>
-    <a href="@Url.Action("PrintRecord","StockManagement",new {Area="Admin"})" class="btn btn-info">Print</a>
+    <a href="@Url.Action("PrintRecord","StockManagement",new {Area="Admin"})" target="_blank" class="btn btn-info">Print</a>
     <a href="@Url.Action("Excel","StockManagement",new {Area="Admin"})" class="btn btn-info">Excel</a>
-    <a href="@Url.Action("Record","StockManagement",new {Area="Admin"})">Record</a>
+    @*<a href="@Url.Action("Record","StockManagement",new {Area="Admin"})">Record</a>*@
     @Html.Partial("_Pagination", Model)
-
     </script>
 </div>

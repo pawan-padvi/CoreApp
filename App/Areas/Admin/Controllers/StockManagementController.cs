@@ -6,6 +6,9 @@ using iText.Kernel.Pdf;
 using System.Text;
 using iText.Html2pdf;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.EMMA;
+using Microsoft.Extensions.Hosting.Internal;
+
 namespace App.Areas.Admin.Controllers
 {
     [Area ( "Admin" )]
@@ -106,7 +109,7 @@ namespace App.Areas.Admin.Controllers
             _model.SearchString = searchString;
             _model.PageSizeId = PageSizeId;
             _model.lstAllStocks = stocks;
-            DataTable dt = new DataTable ( "Grid" );
+            DataTable dt = new DataTable ( "Stock_List" );
             dt.Columns.AddRange ( new DataColumn [] {
             new DataColumn("Product",typeof(string)),
             new DataColumn("Description",typeof(string)),
@@ -145,14 +148,14 @@ namespace App.Areas.Admin.Controllers
                 using ( MemoryStream stream = new MemoryStream ( ) )
                 {
                     wb.SaveAs ( stream );
-                    return File ( stream.ToArray ( ), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grid.xlsx" );
+                    return File ( stream.ToArray ( ), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "StockList.xlsx" );
                 }
             }
         }
         public IActionResult PrintRecord ( )
         {
             string wwwRootPath = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot" );
-            string pdfPath = Path.Combine ( wwwRootPath, "PDF", "makepdf.pdf" ).ToString ( );
+            string pdfPath = Path.Combine ( wwwRootPath, "PDF", "StockList.pdf" ).ToString ( );
             int pageSize = 100;
             int currentPage = 1; string searchString = ""; string SortCol = "Id"; string sortOrder = "Asc";
             int TotalCount = 0;
@@ -178,7 +181,7 @@ text-align: left;
 background-color: #f2f2f2;
 color: black;
 } </style>
-<table class='table table-bordered' ><thead><tr><th>Sr.No</th><th>Type</th><th>Description</th><th>Vendor</th><th>Location</th><th>Unit</th><th>Total</th></tr></thead><tbody>" );
+<table class='table table-bordered' ><thead><tr><th>Sr.No</th><th>Type</th><th>Description</th><th>Vendor</th><th>Location</th><th>Unit</th><th align='right'>Total</th></tr></thead><tbody>" );
             int i = 1;
             foreach ( var item in result )
             {
@@ -194,9 +197,8 @@ color: black;
                                    UnitName1 = s.UnitName,
                                };
 
-                stringBuilder.Append ( $"<tr><td>{i++}</td><td>{Product.First ( ).ProductT}</td><td>{item.Description.ToString ( ).Substring ( 0, Math.Min ( item.Description.Length, 20 ) )}{( item.Description.Length > 20 ? "..." : "" )}</td><td>{item.Vendor}</td><td>{item.StockLocation}</td><td>{UnitName.First ( ).UnitName1}</td><td>{item.TotalCost}</td></tr>" );
-                //Console.WriteLine ( "Value is: " + Math.Min ( item.Description.Length, 20 ) );
-                _logger.LogInformation ( "Value is: " + Math.Min ( item.Description.Length, 20 ) );
+                stringBuilder.Append ( $"<tr><td>{i++}</td><td>{Product.First ( ).ProductT}</td><td>{item.Description.ToString ( ).Substring ( 0, Math.Min ( item.Description.Length, 20 ) )}{( item.Description.Length > 20 ? "..." : "" )}</td><td>{item.Vendor}</td><td>{item.StockLocation}</td><td>{UnitName.First ( ).UnitName1}</td><td align='right'>{string.Format ( "{0:0.00}", item.TotalCost )}</td></tr>" );
+                //_logger.LogInformation ( "Value is: " + Math.Min ( item.Description.Length, 20 ) );
             }
             stringBuilder.Append ( @"</tbody></table>" );
 
@@ -204,7 +206,7 @@ color: black;
             {
 
             }
-            ViewBag.PdfPath = "makepdf.pdf";
+            ViewBag.PdfPath = "StockList.pdf";
             return View ( );
         }
         public IActionResult DeleteFunction ( string? From = "", string? ProductID = "0" )
@@ -267,7 +269,11 @@ color: black;
             if ( ModelState.IsValid )
             {
                 model.CreatedBy = HttpContext.Session.GetString ( "UserName" );
-                _stockManagement.Insert ( model );
+                var result = _stockManagement.Insert ( model );
+                if ( result.DbCode == "1" )
+                {
+                    ModelState.AddModelError ( "Success", result.DbMsg == null ? "" : result.DbMsg );
+                }
             }
             _model = model;
             _model.lstProductType = _productTypes;
@@ -322,16 +328,17 @@ color: black;
             return View ( _model );
         }
     }
-}
-class Person
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public string? Location { get; set; }
-    public Person ( )
+
+    class Person
     {
-        this.Id = Id;
-        this.Name = Name;
-        this.Location = Location;
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Location { get; set; }
+        public Person ( )
+        {
+            this.Id = Id;
+            this.Name = Name;
+            this.Location = Location;
+        }
     }
 }
