@@ -24,8 +24,8 @@
     <!-- Custom styles for this template-->
     <link href="~/Template/css/sb_new.css" rel="stylesheet">
     <style>
-        .hide{
-            display:none;
+        .hide {
+            display: none;
         }
     </style>
 </head>
@@ -65,7 +65,7 @@
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
                             </div>
-                            <form class="user" asp-action="Register" asp-controller="Home">
+                            <form class="user" asp-action="Register" asp-controller="Home" enctype="multipart/form-data">
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         @Html.TextBoxFor(model=>model.FirstName,new{@class="form-control form-control-user",id="exampleFirstName",  placeholder="First Name", type="text" })
@@ -90,7 +90,24 @@
 
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn-user btn-block">Register Account</button>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 mb-3 mb-sm-0 text-center">
+                                        <span style="display:inline-flex;">
+                                            @Html.TextBoxFor(x=>x.imageProfile,new{@class="form-control-file",type="file",placehloder="Upload User Image",title="file upload"})
+                                            @Html.TextBoxFor(x=>x.imageProfile2,new{@class="form-control-file",type="file",placehloder="Upload User Image",title="file upload"})
+                                        </span>
+
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 mb-3 mb-sm-0 text-center">
+                                        <span style="display:inline-flex; justify-content:space-evenly">
+                                            <img src="~/Template/img/notFound.png" id="previewImage" alt="File Not Found" style="height:100px; width:100px;" />
+                                            <img src="~/Template/img/notFound.png" id="previewImage2" alt="File Not Found" style="height:100px; width:100px;" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-user btn-block" type="submit">Register Account</button>
                                 <hr class="hide">
                                 <a href="index.html" class="btn btn-google btn-user btn-block hide">
                                     <i class="fab fa-google fa-fw"></i> Register with Google
@@ -124,6 +141,36 @@
     <!-- Custom scripts for all pages-->
     <script src="~/Template/js/sb-admin-2.min.js"></script>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //First Image
+            $('#imageProfile').change(function () {
+                var file = this.files[0];
+                $('#imageProfile').hide();
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        $('#previewImage').attr('src', event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            })
+
+            //Second Image
+            $('#imageProfile2').change(function () {
+                var file = this.files[0];
+                $('#imageProfile2').hide();
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        $('#previewImage2').attr('src', event.target.result)
+                    };
+                    reader.readAsDataURL(file);
+                }
+            })
+        });
+    </script>
 </body>
 
 </html>

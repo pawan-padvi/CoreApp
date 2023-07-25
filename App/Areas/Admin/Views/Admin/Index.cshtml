@@ -3,36 +3,38 @@
     Layout = "_Layout";
 }
 <style>
-    .fa,td{
-        cursor:pointer;
+    .fa, td {
+        cursor: pointer;
     }
-   a {
-  text-decoration: none !important;
-}
+
+    a {
+        text-decoration: none !important;
+    }
 </style>
 <div class="container">
-        <table class="table table-responsive d-lg-table  table-hover">
-            <thead class="thead-light">
-                <tr>
-                    <th><a href="#">First Name <span class=" fa fa-sort"></span></a></th>
-                    <th><a href="#">Last Name <span class="fa fa-sort"></span></a></th>
-                    <th><a href="#">Email <span class="fa fa-sort"></span></a></th>
-                    <th><a href="#">Password <span class=" fa fa-sort"></span></a></th>
-                    <th><li class=" fa fa-filter" aria-hidden="true"></li></th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table table-responsive d-lg-table  table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th><a href="#">Profile</a></th>
+                <th><a href="#">First Name</a></th>
+                <th><a href="#">Last Name </a></th>
+                <th><a href="#">Email </a></th>
+                <th><a href="#">Password</a></th>
+
+            </tr>
+        </thead>
+        <tbody>
             @foreach ( var res in Model.ListRegister )
             {
-                    <tr>
-                        <td>@res.FirstName</td>
-                        <td>@res.LastName</td>
-                        <td>@res.Email</td>
-                        <td>@res.Password</td>
-                            <th><li class="fa fa-list" aria-hidden="true"></li></th>
-                    </tr>
+                <tr>
+                    <td><img src="~/@res.Profile1Url" alt="ProfileNotFound" style="height:35px; width:35px;" /></td>
+                    <td>@res.FirstName</td>
+                    <td>@res.LastName</td>
+                    <td>@res.Email</td>
+                    <td>@res.Password</td>
+                </tr>
             }
-            </tbody>
-        </table>
+        </tbody>
+    </table>
     @Html.Partial("_Pagination", Model)
 </div>

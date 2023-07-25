@@ -17,8 +17,8 @@ namespace App.Services
         List<RegisterModel> IRegister.GetAll ( ref int TotalCount, int currentPage, string searchString, int pageSize, string sortCol, string sortOrder, string userId )
         {
             var dbparams = new DynamicParameters ( );
-                dbparams.Add ( "@currentPage", currentPage, DbType.String );
-           
+            dbparams.Add ( "@currentPage", currentPage, DbType.String );
+
             dbparams.Add ( "@searchString", searchString, DbType.String );
             dbparams.Add ( "@pageSize", pageSize, DbType.String );
             sortOrder = sortCol + " " + sortOrder;
@@ -37,12 +37,14 @@ namespace App.Services
         RegisterModel IRegister.Insert ( RegisterModel registerModel )
         {
             var dbparams = new DynamicParameters ( );
-            dbparams.Add("@Id",registerModel.Id,DbType.String);
+            dbparams.Add ( "@Id", registerModel.Id, DbType.String );
             dbparams.Add ( "@Email", registerModel.Email, DbType.String );
             dbparams.Add ( "@Password", registerModel.Password, DbType.String );
             dbparams.Add ( "@FirstName", registerModel.FirstName, DbType.String );
             dbparams.Add ( "@LastName", registerModel.LastName, DbType.String );
-            dbparams.Add( "@CreatedBy",registerModel.CreatedBy, DbType.String );
+            dbparams.Add ( "@CreatedBy", registerModel.CreatedBy, DbType.String );
+            dbparams.Add ( "@Profile1Url", registerModel.Profile1Url, DbType.String );
+            dbparams.Add ( "@Profile2Url", registerModel.Profile2Url, DbType.String );
             return _service.Update<RegisterModel> ( CommonSp.RegisterUser, dbparams, commandType: CommandType.StoredProcedure );
         }
     }

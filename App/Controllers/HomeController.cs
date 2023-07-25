@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Xml.Linq;
 using IronOcr;
+using System.Text;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace App.Controllers
 {
@@ -34,6 +36,7 @@ namespace App.Controllers
         {
             if ( HttpContext.Session.GetString ( "UserName" ) != null && HttpContext.Session.GetString ( "PassWord" ) != null )
             {
+                LoadImages ( );
                 return View ( );
             }
             else
@@ -53,12 +56,14 @@ namespace App.Controllers
                     HttpContext.Response.Cookies.Append ( "WebAppPassword", pass, cookieOptions );
                     HttpContext.Session.SetString ( "UserName", name );
                     HttpContext.Session.SetString ( "PassWord", pass );
+                    LoadImages ( );
                     return View ( "index" );
                 }
                 else
                 {
                     loginModel.Email = HttpContext.Request.Cookies ["WebAppUser"];
                     loginModel.Password = HttpContext.Request.Cookies ["WebAppPassword"];
+                    LoadImages ( );
                     return View ( "Login", loginModel );
                 }
 
@@ -82,12 +87,13 @@ namespace App.Controllers
                 HttpContext.Response.Cookies.Append ( "WebAppPassword", pass, cookieOptions );
                 HttpContext.Session.SetString ( "UserName", name );
                 HttpContext.Session.SetString ( "PassWord", pass );
-
+                LoadImages ( );
                 ModelState.AddModelError ( "Success", result.DbMsg == null ? "" : result.DbMsg );
                 return View ( "Index" );
             }
             else
             {
+                LoadImages ( );
                 ModelState.AddModelError ( "Error", result.DbMsg == null ? "" : result.DbMsg );
                 return View ( "Login" );
             }
@@ -106,6 +112,44 @@ namespace App.Controllers
         public IActionResult Privacy ( )
         {
             return View ( );
+        }
+        public IActionResult LoadImages ( )
+        {
+
+            var files = Directory.GetFiles ( Directory.GetCurrentDirectory ( ) + "\\wwwroot\\uploads" );
+            List<String> lstImage = new List<String> ( );
+
+            if ( files.Length > 0 )
+            {
+                foreach ( var file in files )
+                {
+                    var filename = $"uploads/{Path.GetFileName ( file )}";
+                    lstImage.Add ( filename );
+                }
+
+            }
+            ViewData ["Images"] = lstImage;
+
+            string? filePath = "";
+            string? uniqueFileName = "";
+            string? uploads = "";
+            if ( fileUploadModel.imageUpload != null )
+            {
+                uniqueFileName = GetUniqueFileName ( fileUploadModel.imageUpload.FileName );
+                uploads = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot\\uploads" );
+                filePath = Path.Combine ( uploads, uniqueFileName );
+                fileUploadModel.ImagePath = filePath;
+
+                ViewBag.FilePath = uniqueFileName;
+                fileUploadModel.imageUpload.CopyTo ( new FileStream ( filePath, FileMode.Create ) );
+                HttpContext.Session.SetString ( "Path", uniqueFileName );
+            }
+
+            //fileUploadModel.ImagePath = filePath;
+
+            // IronOcrFunction ( filePath );
+            return View ( "Index", fileUploadModel );
+
         }
         public IActionResult Register ( )
         {
@@ -126,6 +170,22 @@ namespace App.Controllers
                 Guid id = Guid.NewGuid ( );
                 registerModel.Id = model.Id == null ? id.ToString ( ) : model.Id;
                 registerModel.LastName = model.LastName;
+                var UploadFolder = Path.Combine ( Directory.GetCurrentDirectory ( ) + "\\wwwroot\\uploads" );
+                if ( model.imageProfile != null )
+                {
+                    var FileName1 = Path.GetFileNameWithoutExtension ( model.imageProfile.FileName ) + "_" + Guid.NewGuid ( ).ToString ( ).Substring ( 0, 5 ) + Path.GetExtension ( model.imageProfile.FileName );
+                    var FilePath1 = Path.Combine ( UploadFolder, FileName1 );
+                    registerModel.Profile1Url = $"uploads/{FileName1}";
+                    model.imageProfile.CopyTo ( new FileStream ( FilePath1, FileMode.Create ) );
+                }
+                if ( model.imageProfile2 != null )
+                {
+                    var FileName2 = Path.GetFileNameWithoutExtension ( model.imageProfile2.FileName ) + "_" + Guid.NewGuid ( ).ToString ( ).Substring ( 0, 5 ) + Path.GetExtension ( model.imageProfile2.FileName );
+                    var FilePath2 = Path.Combine ( UploadFolder, FileName2 );
+                    registerModel.Profile2Url = $"uploads/{FileName2}"; ;
+                    model.imageProfile2.CopyTo ( new FileStream ( FilePath2, FileMode.Create ) );
+                }
+
                 var result = register.Insert ( registerModel );
                 if ( result.DbCode == "1" )
                 {
@@ -156,45 +216,37 @@ namespace App.Controllers
         {
             return View ( new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier } );
         }
-        [Obsolete]
-
-        public void IronOcrFunction ( string imagePath )
-        {
-            var ocr = new IronTesseract ( );
-
-            using ( var inputImage = new OcrInput ( imagePath ) )
-            {
-
-                var result = ocr.Read ( inputImage );
-                if ( result != null && result.Text != null )
-                {
-                    string extractedText = result.Text;
-                    Console.WriteLine ( extractedText );
-                }
-            }
-        }
-
         [HttpPost]
         public IActionResult Index ( FileUploadModel model )
         {
             string? filePath = "";
             string? uniqueFileName = "";
             string? uploads = "";
-            if ( model.imageUpload != null )
+            try
             {
-                uniqueFileName = GetUniqueFileName ( model.imageUpload.FileName );
-                uploads = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot\\uploads" );
-                filePath = Path.Combine ( uploads, uniqueFileName );
-                model.ImagePath = filePath;
+                if ( model.imageUpload != null )
+                {
+                    uniqueFileName = model.imageUpload.FileName;
+                    uploads = Path.Combine ( Directory.GetCurrentDirectory ( ), "wwwroot\\uploads" );
+                    filePath = Path.Combine ( uploads, uniqueFileName );
+                    model.ImagePath = filePath;
+                    ViewBag.FilePath = uniqueFileName;
+                    model.imageUpload.CopyTo ( new FileStream ( filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite ) );
 
-                ViewBag.FilePath = uniqueFileName;
-                model.imageUpload.CopyTo ( new FileStream ( filePath, FileMode.Create ) );
+                }
             }
-            HttpContext.Session.SetString ( "Path", uniqueFileName );
-            //fileUploadModel.ImagePath = filePath;
+            catch ( Exception ex )
+            {
+                Console.WriteLine ( ex );
+                HttpContext.Session.SetString ( "Path", uniqueFileName );
+                LoadImages ( );
+                return View ( fileUploadModel );
+            }
 
-            // IronOcrFunction ( filePath );
+            HttpContext.Session.SetString ( "Path", uniqueFileName );
+            LoadImages ( );
             return View ( fileUploadModel );
+
         }
 
         private string GetUniqueFileName ( string fileName )
